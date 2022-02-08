@@ -1,0 +1,39 @@
+configVersion: 1
+project: prometheus-exporter-gcp-quota
+
+---
+artifact: builder
+from: golang:1.17-alpine
+git:
+  - to: /app
+    includePaths:
+      - "go.mod"
+      - "go.sum"
+      - "main.go"
+    stageDependencies:
+      install:
+        - "**/*"
+shell:
+  install:
+    - cd /app
+    - go mod download
+  setup:
+    - cd /app
+    - go build -o prometheus-exporter-gcp-quota .
+
+---
+image: prometheus-exporter-gcp-quota
+from: alpine
+import:
+  - artifact: builder
+    before: install
+    add: /app/prometheus-exporter-gcp-quota
+    to: /app/prometheus-exporter-gcp-quota
+  - artifact: builder
+    before: install
+    add: /etc/ssl/certs
+    to: /etc/ssl/certs
+docker:
+  WORKDIR: "/app"
+  EXPOSE: ["9593"]
+  CMD: ["/app/prometheus-exporter-gcp-quota"]

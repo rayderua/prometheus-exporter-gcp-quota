@@ -1,0 +1,4 @@
+---
+- project: "google-project"         # Google project name
+  regions: []                       # Regions for scrape (scrape all reginos if empty)
+  credentials: "credentials.json"   # Service account credentials file path
